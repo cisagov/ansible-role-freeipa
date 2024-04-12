@@ -1,10 +1,4 @@
 ---
-# This molecule configuration file is suitable for testing Ansible
-# roles that _do_ require SystemD.  If your Ansible role _does not_
-# require SystemD then you should use molecule-no-systemd.yml instead.
-#
-# Note that the molecule configuration file that is symlinked to
-# molecule.yml is the one that will be used.
 dependency:
   name: galaxy
 driver:
@@ -15,8 +9,8 @@ platforms:
   # support Fedora.
   - cgroupns_mode: host
     command: /lib/systemd/systemd
-    image: geerlingguy/docker-fedora37-ansible:latest
-    name: fedora37-systemd
+    image: docker.io/geerlingguy/docker-fedora38-ansible:latest
+    name: fedora38-systemd
     platform: amd64
     pre_build_image: true
     privileged: true
@@ -24,8 +18,8 @@ platforms:
       - /sys/fs/cgroup:/sys/fs/cgroup:rw
   - cgroupns_mode: host
     command: /lib/systemd/systemd
-    image: geerlingguy/docker-fedora38-ansible:latest
-    name: fedora38-systemd
+    image: docker.io/geerlingguy/docker-fedora39-ansible:latest
+    name: fedora39-systemd
     platform: amd64
     pre_build_image: true
     privileged: true
