@@ -25,7 +25,7 @@ galaxy_info:
     # support Fedora.
     - name: Fedora
       versions:
-        - "37"
         - "38"
+        - "39"
   role_name: freeipa
   standalone: true
