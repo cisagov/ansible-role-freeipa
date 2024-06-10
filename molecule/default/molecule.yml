@@ -9,8 +9,8 @@ platforms:
   # support Fedora.
   - cgroupns_mode: host
     command: /lib/systemd/systemd
-    image: docker.io/geerlingguy/docker-fedora38-ansible:latest
-    name: fedora38-systemd
+    image: docker.io/geerlingguy/docker-fedora39-ansible:latest
+    name: fedora39-systemd-amd64
     platform: amd64
     pre_build_image: true
     privileged: true
@@ -19,8 +19,26 @@ platforms:
   - cgroupns_mode: host
     command: /lib/systemd/systemd
     image: docker.io/geerlingguy/docker-fedora39-ansible:latest
-    name: fedora39-systemd
+    name: fedora39-systemd-arm64
+    platform: arm64
+    pre_build_image: true
+    privileged: true
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+  - cgroupns_mode: host
+    command: /lib/systemd/systemd
+    image: docker.io/geerlingguy/docker-fedora40-ansible:latest
+    name: fedora40-systemd-amd64
     platform: amd64
+    pre_build_image: true
+    privileged: true
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+  - cgroupns_mode: host
+    command: /lib/systemd/systemd
+    image: docker.io/geerlingguy/docker-fedora40-ansible:latest
+    name: fedora40-systemd-arm64
+    platform: arm64
     pre_build_image: true
     privileged: true
     volumes:
