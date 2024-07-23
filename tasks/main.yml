@@ -5,19 +5,21 @@
       - freeipa-healthcheck
       - freeipa-server
 
-- name: Copy DHS CA certs
-  ansible.builtin.get_url:
-    dest: /usr/local/share
-    mode: 0600
-    url: https://pki.treas.gov/dhsca_fullpath.p7b
-- name: Convert P7B to PEM
-  ansible.builtin.command:
-    cmd: >
-      openssl pkcs7 -print_certs
-      -in /usr/local/share/dhsca_fullpath.p7b
-      -inform DER
-      -out /usr/local/share/dhsca_fullpath.pem
-    creates: /usr/local/share/dhsca_fullpath.pem
+- name: Copy and convert DHS CA certs
+  block:
+    - name: Copy DHS CA certs
+      ansible.builtin.get_url:
+        dest: /usr/local/share
+        mode: 0600
+        url: https://pki.treas.gov/dhsca_fullpath.p7b
+    - name: Convert P7B to PEM
+      ansible.builtin.command:
+        cmd: >
+          openssl pkcs7 -print_certs
+          -in /usr/local/share/dhsca_fullpath.p7b
+          -inform DER
+          -out /usr/local/share/dhsca_fullpath.pem
+        creates: /usr/local/share/dhsca_fullpath.pem
 
 - name: Copy setup script
   ansible.builtin.copy:
