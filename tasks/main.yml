@@ -22,10 +22,10 @@
     - freeipa_enable_hsts
 
 - name: Install a daily cron job to disable inactive users
-  ansible.builtin.template:
+  ansible.builtin.copy:
     dest: /etc/cron.daily/disable_inactive_users.sh
     mode: 0500
-    src: disable_inactive_users.j2.sh
+    src: disable_inactive_users.sh
 
 - name: Copy DHS CA certs
   ansible.builtin.get_url:
