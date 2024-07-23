@@ -37,22 +37,22 @@
       ansible.builtin.copy:
         dest: /usr/local/sbin
         mode: 0500
-        src: 01_setup_disabling_of_inactive_users.sh
+        src: 01_setup_disabling_of_inactive_freeipa_users.sh
     - name: Copy shell script to disable inactive users
       ansible.builtin.copy:
         dest: /usr/local/sbin
         mode: 0500
-        src: disable_inactive_users.sh
+        src: disable_inactive_freeipa_users.sh
     - name: Copy systemd service to disable inactive users
       ansible.builtin.copy:
         dest: /etc/systemd/system
         mode: 0500
-        src: disable-inactive-users.service
+        src: disable-inactive-freeipa-users.service
     - name: Copy systemd timer to disable inactive users daily
       ansible.builtin.copy:
         dest: /etc/systemd/system
         mode: 0500
-        src: disable-inactive-users.timer
+        src: disable-inactive-freeipa-users.timer
 
 - name: Install Apache config fragment to disable trace functionality
   ansible.builtin.copy:

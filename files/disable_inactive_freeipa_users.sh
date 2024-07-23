@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 
 # Usage:
-#   disable_inactive_users.sh [disable_time]
+#   disable_inactive_freeipa_users.sh [disable_time]
 #
 # A user is considered inactive if he or she has not logged since
 # disable_time.  If disable_time is not specified then a default value
