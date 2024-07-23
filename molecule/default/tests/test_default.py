@@ -25,6 +25,7 @@ def test_packages(host, pkg):
         "/usr/local/share/dhsca_fullpath.p7b",
         "/usr/local/share/dhsca_fullpath.pem",
         "/usr/local/sbin/00_setup_freeipa.sh",
+        "/usr/local/sbin/01_setup_disabling_of_inactive_users.sh",
     ],
 )
 def test_files(host, f):

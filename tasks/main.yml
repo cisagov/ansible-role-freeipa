@@ -41,8 +41,11 @@
       -out /usr/local/share/dhsca_fullpath.pem
     creates: /usr/local/share/dhsca_fullpath.pem
 
-- name: Copy setup script
+- name: Copy setup scripts
   ansible.builtin.copy:
     dest: /usr/local/sbin
     mode: 0500
-    src: 00_setup_freeipa.sh
+    src: "{{ item }}"
+  loop:
+    - 00_setup_freeipa.sh
+    - 01_setup_disabling_of_inactive_users.sh
