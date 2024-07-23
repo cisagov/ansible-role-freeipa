@@ -21,12 +21,6 @@
   when:
     - freeipa_enable_hsts
 
-- name: Install a daily cron job to disable inactive users
-  ansible.builtin.copy:
-    dest: /etc/cron.daily/disable_inactive_users.sh
-    mode: 0500
-    src: disable_inactive_users.sh
-
 - name: Copy DHS CA certs
   ansible.builtin.get_url:
     dest: /usr/local/share
@@ -41,11 +35,23 @@
       -out /usr/local/share/dhsca_fullpath.pem
     creates: /usr/local/share/dhsca_fullpath.pem
 
-- name: Copy setup scripts
+- name: Copy setup script
   ansible.builtin.copy:
     dest: /usr/local/sbin
     mode: 0500
-    src: "{{ item }}"
-  loop:
-    - 00_setup_freeipa.sh
-    - 01_setup_disabling_of_inactive_users.sh
+    src: 00_setup_freeipa.sh
+
+- name: Configure FreeIPA and install a cron job to disable inactive users
+  when:
+    - freeipa_disable_inactive_users
+  block:
+    - name: Copy inactive user setup script
+      ansible.builtin.copy:
+        dest: /usr/local/sbin
+        mode: 0500
+        src: 01_setup_disabling_of_inactive_users.sh
+    - name: Install a daily cron job to disable inactive users
+      ansible.builtin.copy:
+        dest: /etc/cron.daily
+        mode: 0500
+        src: disable_inactive_users.sh

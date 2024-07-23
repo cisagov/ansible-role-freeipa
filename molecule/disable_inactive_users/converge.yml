@@ -1,0 +1,9 @@
+---
+- name: Converge
+  hosts: all
+  tasks:
+    - name: Include ansible-role-freeipa-server
+      ansible.builtin.include_role:
+        name: ansible-role-freeipa-server
+      vars:
+        freeipa_disable_inactive_users: true
