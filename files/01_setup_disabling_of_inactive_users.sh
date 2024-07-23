@@ -27,6 +27,11 @@ function setup {
   # Run the ipa config-mod command.  Note that it is harmless to run
   # this command when it changes nothing.
   "${cmd[@]}"
+
+  # Enable the systemd timer that runs the service that runs the
+  # script that disables inactive users.
+  systemctl daemon-reload \
+    && systemctl enable disable-inactive-freeipa-users.timer
 }
 
 if [ $# -ne 0 ]; then

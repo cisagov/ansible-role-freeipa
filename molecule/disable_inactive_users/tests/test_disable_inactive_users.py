@@ -15,8 +15,10 @@ testinfra_hosts = testinfra.utils.ansible_runner.AnsibleRunner(
 @pytest.mark.parametrize(
     "f",
     [
-        "/etc/cron.daily/disable_inactive_users.sh",
+        "/etc/systemd/system/disable-inactive-freeipa-users.service",
+        "/etc/systemd/system/disable-inactive-freeipa-users.timer",
         "/usr/local/sbin/01_setup_disabling_of_inactive_users.sh",
+        "/usr/local/sbin/disable_inactive_users.sh",
     ],
 )
 def test_files(host, f):
@@ -25,6 +27,19 @@ def test_files(host, f):
     assert host.file(f).is_file
     assert host.file(f).user == "root"
     assert host.file(f).group == "root"
+
+
+@pytest.mark.parametrize(
+    "f",
+    [
+        "/etc/systemd/system/disable-inactive-freeipa-users.service",
+        "/etc/systemd/system/disable-inactive-freeipa-users.timer",
+    ],
+)
+def test_verify_systemd_units(host, f):
+    """Verify systemd can parse the unit files we created."""
+    cmd = host.run(f"systemd-analyze verify {f}")
+    assert cmd.rc == 0
 
 
 def test_apache_config(host):
