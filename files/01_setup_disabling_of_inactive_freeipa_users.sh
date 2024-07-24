@@ -24,9 +24,36 @@ function setup {
       cmd+=(--ipaconfigstring="$feature")
     fi
   done
-  # Run the ipa config-mod command.  Note that it is harmless to run
-  # this command when it changes nothing.
+  # Run the ipa config-mod command.
+  #
+  # Note that it is harmless to run this command when it changes
+  # nothing; but, we must temporarily turn off the bash option errexit
+  # since in that case the error code indicates a failure.
+  set +o errexit
   "${cmd[@]}"
+  set -o errexit
+
+  # Create a role whose members are allowed to enable and disable
+  # users.  By default FreeIPA servers cannot do this, so we need to
+  # give them the permission to do so.
+  #
+  # Note that it is harmless to run these command when they change
+  # nothing; but, we must temporarily turn off the bash option errexit
+  # since in that case the error codes indicate a failure.
+  set +o errexit
+  ipa privilege-add "Enable/Disable Users" \
+    --desc="Ability to enable and disable users"
+  ipa privilege-add-permission "Enable/Disable Users" \
+    --permissions="System: Unlock User"
+  ipa privilege-add-permission "Enable/Disable Users" \
+    --permissions="System: Read User Kerberos Login Attributes"
+  ipa role-add "Enable/Disable Users" \
+    --desc="Enable and disable users"
+  ipa role-add-privilege "Enable/Disable Users" \
+    --privileges="Enable/Disable Users"
+  # Add the host group of FreeIPA servers to the role.
+  ipa role-add-member "Enable/Disable Users" --hostgroups=ipaservers
+  set -o errexit
 
   # Enable the systemd timer that runs the service that runs the
   # script that disables inactive users.
