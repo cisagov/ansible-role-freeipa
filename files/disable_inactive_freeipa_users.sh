@@ -27,6 +27,10 @@ set -o pipefail
 # https://www.gnu.org/software/bash/manual/html_node/Shell-Parameter-Expansion.html
 disable_time=${1:-45 days ago}
 
+# Use a temp file for our Kerberos credentials cache, since it only
+# needs to exit while this script is running.
+KRB5CCNAME=$(mktemp)
+
 function usage {
   cat << HELP
 Usage:
@@ -51,6 +55,9 @@ else
   # Convert disable_time into an integer representing seconds since
   # the epoch.
   disable_deadline=$(date --date="$disable_time" +%S)
+
+  # kinit via the host's keytab.
+  kinit -k -t /etc/krb5.keytab
 
   # Grab a list of all non-disabled FreeIPA users
   users=$(
@@ -100,7 +107,7 @@ else
     done
 
     # Now that we have analyzed the last authentication timestamps,
-    # disable the user if necessary.
+    # disable users as necessary.
     #
     # TODO: Note also that after disable_time has elapsed with the
     # "KDC:Disable Last Success" feature disabled we can start
@@ -117,4 +124,7 @@ else
       echo User "$user" not disabled because he or she is an active user.
     fi
   done
+
+  # Destroy our Kerberos credentials cache.
+  kdestroy
 fi
