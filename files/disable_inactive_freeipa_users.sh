@@ -108,7 +108,7 @@ else
     # and simplify this logic.  See #74 for more details.
     if $disable_user; then
       if ! $all_timestamps_invalid; then
-        # ipa user-disable $user
+        ipa user-disable "$user"
         echo User "$user" disabled because he or she is an inactive user.
       else
         echo User "$user" not disabled because all authentication timestamps were invalid.
