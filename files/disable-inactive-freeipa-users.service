@@ -1,7 +1,0 @@
-[Unit]
-Description=Disable inactive FreeIPA users.
-
-[Service]
-ExecStart=/usr/local/sbin/disable_inactive_freeipa_users.sh
-PrivateTmp=true
-Type=oneshot
