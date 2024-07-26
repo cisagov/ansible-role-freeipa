@@ -55,10 +55,11 @@ function setup {
   ipa role-add-member "Enable/Disable Users" --hostgroups=ipaservers
   set -o errexit
 
-  # Enable the systemd timer that runs the service that runs the
-  # script that disables inactive users.
-  systemctl daemon-reload \
-    && systemctl enable disable-inactive-freeipa-users.timer
+  # Enable and start the systemd timer that runs the service that runs
+  # the script that disables inactive users.
+  systemctl daemon-reload
+  systemctl enable disable-inactive-freeipa-users.timer
+  systemctl start disable-inactive-freeipa-users.timer
 }
 
 if [ $# -ne 0 ]; then
