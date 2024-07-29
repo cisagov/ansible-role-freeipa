@@ -3,7 +3,7 @@
 # Usage:
 #   disable_inactive_freeipa_users.sh [disable_time]
 #
-# A user is considered inactive if he or she has not logged in since
+# Users are considered inactive if they have not logged in since
 # disable_time.  If disable_time is not specified then a default value
 # of "45 days ago" is used.
 #
@@ -18,8 +18,8 @@ set -o nounset
 set -o errexit
 set -o pipefail
 
-# A user is considered inactive if he or she has not logged in since
-# this time.
+# Users are considered inactive if they have not logged in since this
+# time.
 #
 # See the "Shell Parameter Expansion" section of the info manual
 # distributed with bash for more details on this form of parameter
@@ -36,7 +36,7 @@ function usage {
 Usage:
   ${0##*/} [disable_time]
 
-A user is considered inactive if he or she has not logged in since
+Users are considered inactive if they have not logged in since
 disable_time.  If disable_time is not specified then a default value
 of "45 days ago" is used.
 
@@ -75,7 +75,7 @@ else
       # --quiet means no printing unless the p command is used
       sed --quiet 's/\s*Last successful authentication:\s*//p')
     # In the event that all timestamps are invalid (N/A) we don't want
-    # to disable the user since we don't know the last time he or she
+    # to disable users since we don't know the last time they
     # authenticated.
     #
     # TODO: After disable_time has elapsed with the "KDC:Disable Last
@@ -116,12 +116,12 @@ else
     if $disable_user; then
       if ! $all_timestamps_invalid; then
         ipa user-disable "$user"
-        echo User "$user" disabled because he or she is an inactive user.
+        echo User "$user" disabled due to inactivity.
       else
         echo User "$user" not disabled because all authentication timestamps were invalid.
       fi
     else
-      echo User "$user" not disabled because he or she is an active user.
+      echo User "$user" not disabled due to sufficiently recent authentication.
     fi
   done
 
