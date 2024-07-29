@@ -3,7 +3,7 @@
 # Usage:
 #   disable_inactive_freeipa_users.sh [disable_time]
 #
-# A user is considered inactive if he or she has not logged since
+# A user is considered inactive if he or she has not logged in since
 # disable_time.  If disable_time is not specified then a default value
 # of "45 days ago" is used.
 #
@@ -18,8 +18,8 @@ set -o nounset
 set -o errexit
 set -o pipefail
 
-# A user is considered inactive if he or she has not logged since this
-# time.
+# A user is considered inactive if he or she has not logged in since
+# this time.
 #
 # See the "Shell Parameter Expansion" section of the info manual
 # distributed with bash for more details on this form of parameter
@@ -36,7 +36,7 @@ function usage {
 Usage:
   ${0##*/} [disable_time]
 
-A user is considered inactive if he or she has not logged since
+A user is considered inactive if he or she has not logged in since
 disable_time.  If disable_time is not specified then a default value
 of "45 days ago" is used.
 
