@@ -4,7 +4,7 @@ set -o nounset
 set -o errexit
 set -o pipefail
 
-# Set up this instance to disable inactive users.
+# Set up this instance to disable inactive FreeIPA users.
 function setup {
   # Disable the "KDC:Disable Last Success" password plugin feature.
   # We don't want this feature enabled because we want to be able to
