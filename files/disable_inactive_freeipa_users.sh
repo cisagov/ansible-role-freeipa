@@ -7,7 +7,7 @@
 # disable_time.  If disable_time is not specified then a default value
 # of "45 days ago" is used.
 #
-# The date/time must be specified so that it understandable by the
+# The date/time must be specified so that it is understandable by the
 # date command, which is the same as saying it must be understandable
 # by coreutils.  See the "Date input formats" section of the info
 # manual distributed with coreutils for more information on date/time
@@ -28,7 +28,7 @@ set -o pipefail
 disable_time=${1:-45 days ago}
 
 # Use a temp file for our Kerberos credentials cache, since it only
-# needs to exit while this script is running.
+# needs to exist while this script is running.
 KRB5CCNAME=$(mktemp)
 
 function usage {
@@ -40,7 +40,7 @@ A user is considered inactive if he or she has not logged since
 disable_time.  If disable_time is not specified then a default value
 of "45 days ago" is used.
 
-The date/time must be specified so that it understandable by the date
+The date/time must be specified so that it is understandable by the date
 command, which is the same as saying it must be understandable by
 coreutils.  See the "Date input formats" section of the info manual
 distributed with coreutils for more information on date/time formats:

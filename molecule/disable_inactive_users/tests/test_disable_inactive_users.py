@@ -1,4 +1,4 @@
-"""Module containing the tests for the disable_trace scenario."""
+"""Module containing the tests for the disable_inactive_users scenario."""
 
 # Standard Python Libraries
 import os
