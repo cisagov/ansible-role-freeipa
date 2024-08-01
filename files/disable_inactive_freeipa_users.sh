@@ -79,7 +79,7 @@ else
     # authenticated.
     #
     # TODO: After disable_time has elapsed with the "KDC:Disable Last
-    # Success" feature disabled we can start deleting users with all
+    # Success" feature disabled we can start disabling users with all
     # authentication timestamps invalid (N/A).  See #74 for more
     # details.
     all_timestamps_invalid=true
@@ -111,7 +111,7 @@ else
     #
     # TODO: Note also that after disable_time has elapsed with the
     # "KDC:Disable Last Success" feature disabled we can start
-    # deleting users with all authentication timestamps invalid (N/A)
+    # disabling users with all authentication timestamps invalid (N/A)
     # and simplify this logic.  See #74 for more details.
     if $disable_user; then
       if ! $all_timestamps_invalid; then
