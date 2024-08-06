@@ -54,7 +54,7 @@ if [ $# -gt 1 ]; then
 else
   # Convert disable_time into an integer representing seconds since
   # the epoch.
-  disable_deadline=$(date --date="$disable_time" +%S)
+  disable_deadline=$(date --date="$disable_time" +%s)
 
   # kinit via the host's keytab.
   kinit -k -t /etc/krb5.keytab
