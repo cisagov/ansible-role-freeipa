@@ -127,4 +127,5 @@ else
 
   # Destroy our Kerberos credentials cache.
   kdestroy
+  rm "$KRB5CCNAME"
 fi
