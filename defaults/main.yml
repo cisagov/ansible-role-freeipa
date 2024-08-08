@@ -1,6 +1,6 @@
 ---
-# The number of days a user can go without logging in before his or
-# her account is determined to be inactive and is disabled.
+# The number of days an account can go without being authenticated
+# before it is determined to be inactive and is disabled.
 freeipa_days_before_inactive: 45
 
 # Whether or not to set up FreeIPA and create a systemd timer and
