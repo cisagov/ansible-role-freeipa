@@ -3,8 +3,9 @@
 # before it is determined to be inactive and is disabled.
 freeipa_days_before_inactive: 45
 
-# Whether or not to set up FreeIPA and create a systemd timer and
-# service to disable inactive users.
+# Whether or not to (1) configure FreeIPA to enable tracking of the
+# most recent authentication time for each user and (2) create a
+# systemd timer and service to disable inactive users.
 freeipa_disable_inactive_users: false
 
 # Whether or not to disable trace functionality for all HTTP and HTTPS
