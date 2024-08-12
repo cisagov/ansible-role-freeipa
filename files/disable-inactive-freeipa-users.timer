@@ -1,0 +1,12 @@
+[Unit]
+Description=Disable inactive FreeIPA users daily.
+
+[Timer]
+OnCalendar=daily
+Persistent=true
+# We don't want two FreeIPA servers to disable inactive users at the
+# same time, since there is a small chance they may collide.
+RandomizedDelaySec=12h
+
+[Install]
+WantedBy=timers.target

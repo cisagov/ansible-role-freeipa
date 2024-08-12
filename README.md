@@ -14,7 +14,8 @@ None.
 
 | Variable | Description | Default | Required |
 |----------|-------------|---------|----------|
-| freeipa_days_before_inactive | The number of days a user can go without logging in before his or her account is determined to be inactive and is disabled. | `45` | No |
+| freeipa_days_before_inactive | The number of days an account can go without being authenticated before it is determined to be inactive and is disabled. | `45` | No |
+| freeipa_disable_inactive_users | Whether or not to (1) configure FreeIPA to enable tracking of the most recent authentication time for each user and (2) create a systemd timer and service to disable inactive users. | `false` | No |
 | freeipa_disable_trace | Whether or not to disable trace functionality for all HTTP and HTTPS requests. | `false` | No |
 | freeipa_enable_hsts | Whether or not to return HSTS headers for all HTTP and HTTPS requests. | `false` | No |
 

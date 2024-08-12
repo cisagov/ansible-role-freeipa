@@ -188,6 +188,7 @@ jobs:
           - fedora40-systemd
         scenario:
           - default
+          - disable_inactive_users
           - disable_trace
           - enable_hsts
     steps:

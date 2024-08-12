@@ -5,6 +5,61 @@
       - freeipa-healthcheck
       - freeipa-server
 
+- name: Copy and convert DHS CA certs
+  block:
+    - name: Copy DHS CA certs
+      ansible.builtin.get_url:
+        dest: /usr/local/share
+        mode: 0600
+        url: https://pki.treas.gov/dhsca_fullpath.p7b
+    - name: Convert P7B to PEM
+      ansible.builtin.command:
+        cmd: >
+          openssl pkcs7 -print_certs
+          -in /usr/local/share/dhsca_fullpath.p7b
+          -inform DER
+          -out /usr/local/share/dhsca_fullpath.pem
+        creates: /usr/local/share/dhsca_fullpath.pem
+
+- name: Copy setup script
+  ansible.builtin.copy:
+    dest: /usr/local/sbin
+    mode: 0500
+    src: 00_setup_freeipa.sh
+
+- name: >-
+    Configure FreeIPA and add a systemd timer and service to disable
+    inactive users
+  when:
+    - freeipa_disable_inactive_users
+  block:
+    - name: Copy inactive user setup script
+      ansible.builtin.copy:
+        dest: /usr/local/sbin
+        mode: 0500
+        src: 01_setup_disabling_of_inactive_freeipa_users.sh
+    - name: Copy shell script to disable inactive users
+      ansible.builtin.copy:
+        dest: /usr/local/sbin
+        mode: 0500
+        src: disable_inactive_freeipa_users.sh
+    - name: Copy systemd service to disable inactive users
+      ansible.builtin.template:
+        dest: /etc/systemd/system/disable-inactive-freeipa-users.service
+        mode: 0400
+        src: disable-inactive-freeipa-users.j2.service
+        # I'd like to validate the file here, but that can't be done
+        # cleanly.  See ansible/ansible#19243.
+        # validate: systemd-analyze verify %s
+    - name: Copy systemd timer to disable inactive users daily
+      ansible.builtin.copy:
+        dest: /etc/systemd/system
+        mode: 0400
+        src: disable-inactive-freeipa-users.timer
+        # I'd like to validate the file here, but that can't be done
+        # cleanly.  See ansible/ansible#19243.
+        # validate: systemd-analyze verify %s
+
 - name: Install Apache config fragment to disable trace functionality
   ansible.builtin.copy:
     dest: /etc/httpd/conf.d
@@ -20,29 +75,3 @@
     src: enable_hsts.conf
   when:
     - freeipa_enable_hsts
-
-- name: Install a daily cron job to disable inactive users
-  ansible.builtin.template:
-    dest: /etc/cron.daily/disable_inactive_users.sh
-    mode: 0500
-    src: disable_inactive_users.j2.sh
-
-- name: Copy DHS CA certs
-  ansible.builtin.get_url:
-    dest: /usr/local/share
-    mode: 0600
-    url: https://pki.treas.gov/dhsca_fullpath.p7b
-- name: Convert P7B to PEM
-  ansible.builtin.command:
-    cmd: >
-      openssl pkcs7 -print_certs
-      -in /usr/local/share/dhsca_fullpath.p7b
-      -inform DER
-      -out /usr/local/share/dhsca_fullpath.pem
-    creates: /usr/local/share/dhsca_fullpath.pem
-
-- name: Copy setup script
-  ansible.builtin.copy:
-    dest: /usr/local/sbin
-    mode: 0500
-    src: 00_setup_freeipa.sh

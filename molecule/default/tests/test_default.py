@@ -21,7 +21,6 @@ def test_packages(host, pkg):
 @pytest.mark.parametrize(
     "f",
     [
-        "/etc/cron.daily/disable_inactive_users.sh",
         "/usr/local/share/dhsca_fullpath.p7b",
         "/usr/local/share/dhsca_fullpath.pem",
         "/usr/local/sbin/00_setup_freeipa.sh",
