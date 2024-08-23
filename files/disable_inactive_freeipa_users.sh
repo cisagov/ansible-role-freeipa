@@ -74,23 +74,12 @@ else
       |
       # --quiet means no printing unless the p command is used
       sed --quiet 's/\s*Last successful authentication:\s*//p')
-    # In the event that all timestamps are invalid (N/A) we don't want
-    # to disable users since we don't know the last time they
-    # authenticated.
-    #
-    # TODO: After disable_time has elapsed with the "KDC:Disable Last
-    # Success" feature disabled we can start disabling users with all
-    # authentication timestamps invalid (N/A).  See #74 for more
-    # details.
-    all_timestamps_invalid=true
+
     disable_user=true
     for timestamp in $timestamps; do
       # Do we have a valid timestamp in the format that the command
       # ipa user-status uses (YYYYMMDDHHMMSSZ)?
       if [[ $timestamp =~ ^([[:digit:]]{4})([[:digit:]]{2})([[:digit:]]{2})([[:digit:]]{2})([[:digit:]]{2})([[:digit:]]{2})Z$ ]]; then
-        # At least one timestamp is valid.
-        all_timestamps_invalid=false
-
         # 1. Reformat the timestamp to ISO 8601 format so the date
         # command can understand it.
         # 2. Use the date command to convert the ISO 8601 timestamp to
@@ -107,19 +96,10 @@ else
     done
 
     # Now that we have analyzed the last authentication timestamps,
-    # disable users as necessary.
-    #
-    # TODO: Note also that after disable_time has elapsed with the
-    # "KDC:Disable Last Success" feature disabled we can start
-    # disabling users with all authentication timestamps invalid (N/A)
-    # and simplify this logic.  See #74 for more details.
+    # disable the user if necessary.
     if $disable_user; then
-      if ! $all_timestamps_invalid; then
-        ipa user-disable "$user"
-        echo User "$user" disabled due to inactivity.
-      else
-        echo User "$user" not disabled because all authentication timestamps were invalid.
-      fi
+      ipa user-disable "$user"
+      echo User "$user" disabled due to inactivity.
     else
       echo User "$user" not disabled due to sufficiently recent authentication.
     fi
