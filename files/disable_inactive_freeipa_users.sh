@@ -80,6 +80,12 @@ else
   for user in $users; do
     # Do an LDAP query to get the timestamps corresponding to the
     # user's creation time and the user's last authentication time.
+    #
+    # The -Y GSSAPI option tells ldapsearch to authenticate with the
+    # LDAP server using the GSSAPI SASL method (i.e., using Kerberos
+    # credentials), while the -b option specifies the searchbase
+    # (i.e., the starting point for the search).  Note that
+    # ldapsearch does not allow for long-form options.
     ldapsearch_output=$(ldapsearch -Y GSSAPI -b "$searchbase" "uid=$user" createTimestamp krbLastSuccessfulAuth)
 
     # Extract the user's creation timestamp from the LDAP output.
