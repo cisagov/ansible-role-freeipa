@@ -69,8 +69,9 @@ else
       sed --quiet 's/^\s*User login:\s*//p'
   )
 
-  # Grab the domain. Note that # --quiet means no printing unless the
-  # p command is used.
+  # Grab the domain.
+  #
+  # --quiet means no printing unless the p command is used
   domain=$(resolvectl domain | sed --quiet 's/^[^:]*:\s\(.*cool\.cyber\.dhs\.gov\).*$/\1/p')
 
   # Construct the LDAP searchbase
