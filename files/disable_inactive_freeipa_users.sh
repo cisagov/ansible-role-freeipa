@@ -123,8 +123,8 @@ else
           last_authentication_timestamp=${BASH_REMATCH[1]}-${BASH_REMATCH[2]}-${BASH_REMATCH[3]}T${BASH_REMATCH[4]}:${BASH_REMATCH[4]}:${BASH_REMATCH[6]}Z
           last_authentication_timestamp=$(date --date="$last_authentication_timestamp" +%s)
         else
-          # The timestamp may not exist, but it should never exist but
-          # not match the regex above.
+          # The timestamp may not exist, but it should never exist and
+          # at the same time not match the regex above.
           if [[ -n $last_authentication_timestamp ]]; then
             echo User "$user" has an invalid last authentication timestamp.
           fi
