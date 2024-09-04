@@ -124,8 +124,8 @@ else
         fi
 
         # If the timestamp predates the deadline, or if the user has
-        # never authenticated at all, then the user is inactive should
-        # be disabled.
+        # never authenticated at all, then the user is inactive and
+        # should be disabled.
         if [[ -z $last_authentication_timestamp ]] || ((last_authentication_timestamp < disable_deadline)); then
           ipa user-disable "$user"
           echo User "$user" disabled due to inactivity.
