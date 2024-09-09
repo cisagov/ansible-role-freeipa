@@ -59,11 +59,16 @@ else
   # kinit via the host's keytab.
   kinit -k -t /etc/krb5.keytab
 
-  # Grab a list of all non-disabled FreeIPA users
+  # Grab a list of all non-disabled, FreeIPA users who are not in the
+  # admins group.
+  #
+  # We don't want to disable any users in the admins group, nor do the
+  # FreeIPA servers have the permission to do that.
   users=$(
     # Note that we disable the size and time limits normally in place
     # when running ipa user-find.
-    ipa user-find --disabled=false --sizelimit=0 --timelimit=0 \
+    ipa user-find --disabled=false --not-in-groups=admins \
+      --sizelimit=0 --timelimit=0 \
       |
       # --quiet means no printing unless the p command is used
       sed --quiet 's/^\s*User login:\s*//p'
