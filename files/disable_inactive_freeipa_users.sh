@@ -83,15 +83,15 @@ else
   searchbase="cn=users,cn=accounts,dc="${domain//./,dc=}
 
   for user in $users; do
-    # Do an LDAP query to get the timestamps corresponding to the
-    # user's creation time and the user's last authentication time.
+    # Do an LDAP query to get the timestamp corresponding to the
+    # user's creation time.
     #
     # The -Y GSSAPI option tells ldapsearch to authenticate with the
     # LDAP server using the GSSAPI SASL method (i.e., using Kerberos
     # credentials), while the -b option specifies the searchbase
     # (i.e., the starting point for the search).  Note that
     # ldapsearch does not allow for long-form options.
-    ldapsearch_output=$(ldapsearch -Y GSSAPI -b "$searchbase" "uid=$user" createTimestamp krbLastSuccessfulAuth)
+    ldapsearch_output=$(ldapsearch -Y GSSAPI -b "$searchbase" "uid=$user" createTimestamp)
 
     # Extract the user's creation timestamp from the LDAP output.
     #
@@ -111,36 +111,39 @@ else
       # This if skips any users that were created recently but have
       # not yet logged in.  We don't want to disable their access yet.
       if ((create_timestamp < disable_deadline)); then
-        # Extract the user's last authentication timestamp from the
-        # LDAP output.  Note that this timestamp may not exist if the
-        # user has never logged in.
-        #
-        # --quiet means no printing unless the p command is used
-        last_authentication_timestamp=$(sed --quiet 's/^krbLastSuccessfulAuth:\s//p' <<< "$ldapsearch_output")
+        timestamps=$(ipa user-status "$user" \
+          |
+          # --quiet means no printing unless the p command is used
+          sed --quiet 's/\s*Last successful authentication:\s*//p')
 
-        # Do we have a valid timestamp in the format that IPA and LDAP
-        # use (YYYYMMDDHHMMSSZ)?
-        if [[ $last_authentication_timestamp =~ ^([[:digit:]]{4})([[:digit:]]{2})([[:digit:]]{2})([[:digit:]]{2})([[:digit:]]{2})([[:digit:]]{2})Z$ ]]; then
-          # 1. Reformat the timestamp to ISO 8601 format so the date
-          # command can understand it.
-          # 2. Use the date command to convert the ISO 8601 timestamp
-          # to seconds since the epoch.
-          last_authentication_timestamp=${BASH_REMATCH[1]}-${BASH_REMATCH[2]}-${BASH_REMATCH[3]}T${BASH_REMATCH[4]}:${BASH_REMATCH[4]}:${BASH_REMATCH[6]}Z
-          last_authentication_timestamp=$(date --date="$last_authentication_timestamp" +%s)
-        else
-          # The timestamp may not exist, but it should never exist and
-          # at the same time not match the regex above.
-          if [[ -n $last_authentication_timestamp ]]; then
-            echo User "$user" has an invalid last authentication timestamp.
+        # Set last_authentication_timestamp equal to the epoch, then
+        # loop through the timestamps from FreeIPA and set
+        # last_authentication_timestamp equal to the most recent one.
+        last_authentication_timestamp=$(date --date="1970-01-01T00:00:00Z" +%s)
+        for timestamp in $timestamps; do
+          # Do we have a valid timestamp in the format that the
+          # command ipa user-status uses (YYYYMMDDHHMMSSZ)?
+          if [[ $timestamp =~ ^([[:digit:]]{4})([[:digit:]]{2})([[:digit:]]{2})([[:digit:]]{2})([[:digit:]]{2})([[:digit:]]{2})Z$ ]]; then
+            # 1. Reformat the timestamp to ISO 8601 format so the date
+            # command can understand it.
+            # 2. Use the date command to convert the ISO 8601
+            # timestamp to seconds since the epoch.
+            timestamp=${BASH_REMATCH[1]}-${BASH_REMATCH[2]}-${BASH_REMATCH[3]}T${BASH_REMATCH[4]}:${BASH_REMATCH[4]}:${BASH_REMATCH[6]}Z
+            timestamp=$(date --date="$timestamp" +%s)
+
+            # If the timestamp postdates the deadline then the user is
+            # active and should not be disabled.
+            if ((timestamp > last_authentication_timestamp)); then
+              last_authentication_timestamp=$timestamp
+            fi
           fi
-        fi
+        done
 
-        # If the timestamp predates the deadline, or if the user has
-        # never authenticated at all, then the user is inactive and
-        # should be disabled.
-        if [[ -z $last_authentication_timestamp ]] || ((last_authentication_timestamp < disable_deadline)); then
+        # If the last authentication timestamp predates the deadline
+        # then the user is inactive and should be disabled.
+        if ((last_authentication_timestamp < disable_deadline)); then
+          echo Disabling user "$user" due to inactivity.
           ipa user-disable "$user"
-          echo User "$user" disabled due to inactivity.
         else
           echo User "$user" not disabled due to sufficiently recent authentication.
         fi
