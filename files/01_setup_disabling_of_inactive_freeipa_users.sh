@@ -10,16 +10,20 @@ function setup {
   # We don't want this feature enabled because we want to be able to
   # disable inactive users, which requires us to be able to determine
   # the last time a user authenticated.
-  password_plugin_features=$(ipa config-show \
+  #
+  # Note that we read in the variable password_plugin_features as a
+  # bash array (-a).  We also include the -r option to avoid mangling
+  # backslashes.  The read bash builtin does not support long command
+  # line options.
+  IFS=',' read -a -r password_plugin_features <<< "$(ipa config-show \
     |
     # --quiet means no printing unless the p command is used
-    sed --quiet "s/^\s*Password plugin features:\s*\(.*\)/\1/p" \
-    | tr "," "\n")
+    sed --quiet "s/, /,/;s/^\s*Password plugin features:\s*\(.*\)/\1/p")"
   # Build up the ipa config-mod command to run in a bash array.  We
   # need to include every password plugin feature _except_ for
   # KDC:Disable Last Success.
   cmd=(ipa config-mod)
-  for feature in $password_plugin_features; do
+  for feature in "${password_plugin_features[@]}"; do
     if [ "$feature" != "KDC:Disable Last Success" ]; then
       cmd+=(--ipaconfigstring="$feature")
     fi
@@ -27,8 +31,8 @@ function setup {
   # Run the ipa config-mod command.
   #
   # Note that it is harmless to run this command when it changes
-  # nothing; but, we must temporarily turn off the bash option errexit
-  # since in that case the error code indicates a failure.
+  # nothing; however, we must temporarily turn off the bash option
+  # errexit since in that case the error code indicates a failure.
   set +o errexit
   "${cmd[@]}"
   set -o errexit
